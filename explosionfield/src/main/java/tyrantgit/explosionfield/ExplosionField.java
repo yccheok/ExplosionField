@@ -38,6 +38,7 @@ public class ExplosionField extends View {
 
     private List<ExplosionAnimator> mExplosions = new ArrayList<>();
     private int[] mExpandInset = new int[2];
+    private Animator.AnimatorListener mListener;
 
     public ExplosionField(Context context) {
         super(context);
@@ -71,12 +72,19 @@ public class ExplosionField extends View {
         mExpandInset[1] = dy;
     }
 
+    public void setListener(android.animation.Animator.AnimatorListener listener) {
+        mListener = listener;
+    }
+
     public void explode(Bitmap bitmap, Rect bound, long startDelay, long duration) {
         final ExplosionAnimator explosion = new ExplosionAnimator(this, bitmap, bound);
         explosion.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 mExplosions.remove(animation);
+                if (mListener != null) {
+                    mListener.onAnimationEnd(animation);
+                }
             }
         });
         explosion.setStartDelay(startDelay);
